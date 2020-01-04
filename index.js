@@ -2,6 +2,7 @@ import React from 'react';
 import Home from './app/views/Home';
 import GameDetails from './app/views/GameDetails';
 import BigTwo from './app/views/BigTwo';
+import LoadingView from './app/views/LoadingView';
 import ModalAddBigTwoRound from './app/views/ModalAddBigTwoRound';
 import {Navigation} from 'react-native-navigation';
 import store from './app/redux/store';
@@ -37,6 +38,16 @@ Navigation.registerComponent(
     </Provider>
   ),
   () => GameDetails,
+);
+
+Navigation.registerComponent(
+  'LoadingView',
+  () => props => (
+    <Provider store={store}>
+      <LoadingView {...props} />
+    </Provider>
+  ),
+  () => LoadingView,
 );
 
 Navigation.registerComponent(
@@ -102,8 +113,8 @@ Navigation.events().registerAppLaunchedListener(() => {
         children: [
           {
             component: {
-              id: 'Home',
-              name: 'Home',
+              id: 'LoadingView',
+              name: 'LoadingView',
             },
           },
         ],

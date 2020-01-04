@@ -1,12 +1,14 @@
-import { Navigation } from 'react-native-navigation';
+import {Navigation} from 'react-native-navigation';
 
 export function pushScreen(currentScreen, newScreen, options = {}) {
-  if (!currentScreen) return;
+  if (!currentScreen) {
+    return;
+  }
   Navigation.push(currentScreen, {
     component: {
       name: newScreen,
       id: newScreen,
-    }
+    },
   });
 }
 
@@ -16,8 +18,25 @@ export function showModal(screen) {
       name: screen,
       id: screen,
       options: {
-        layout: { backgroundColor: 'transparent' },
+        layout: {backgroundColor: 'transparent'},
         modalPresentationStyle: 'fullScreen',
+      },
+    },
+  });
+}
+
+export function startHome() {
+  Navigation.setRoot({
+    root: {
+      stack: {
+        children: [
+          {
+            component: {
+              id: 'Home',
+              name: 'Home',
+            },
+          },
+        ],
       },
     },
   });
