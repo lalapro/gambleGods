@@ -27,12 +27,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   wonProfile: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'green',
+    backgroundColor: green,
     marginHorizontal: 2,
   },
   name: {
@@ -53,7 +53,7 @@ export default class PersonCircle extends Component {
     return (
       <View
         style={
-          won
+          winner
             ? styles.wonProfile
             : [styles.profile, {backgroundColor: color ? color : 'red'}]
         }>

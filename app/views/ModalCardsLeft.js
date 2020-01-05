@@ -58,7 +58,9 @@ export default class ModalCardsLeft extends Component {
     const {close} = this.props;
     return (
       <View style={styles.content}>
-        <Text style={{...nobelBold18, marginTop: 5}}>Cards Left:</Text>
+        <Text style={{...nobelBold18, marginTop: 5, marginBottom: 10}}>
+          Cards Left:
+        </Text>
         <View
           style={{
             flexDirection: 'row',

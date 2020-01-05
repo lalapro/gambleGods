@@ -77,35 +77,51 @@ class Home extends Component<Props> {
   // }
 
   render() {
-    const {componentId, selectedGameActions} = this.props;
+    const {componentId, selectedGameActions, gameState} = this.props;
     const {roomName} = this.state;
+    const {users} = gameState;
     const {gameTypes, members} = ROOMDETAILS;
-    // console.log(this.props)
     return (
       <View style={styles.container}>
         <View style={{width: '100%', height: 50}} />
         <Text style={styles.roomName}>{roomName}</Text>
         <Text style={{...nobel12}}>Members:</Text>
-        {members.map(member => (
-          <Text key={member.name} style={{...nobel12}}>
-            {member.name}
-          </Text>
-        ))}
-        <Card
-          onPress={() => {
-            this.selectGameToView('Poker');
-            AppActions.pushScreen(componentId, 'GameDetails');
-          }}
-          mainText={'Poker'}
-          subText={'TBD'}
-        />
+        {users &&
+          Object.keys(users).map(member => {
+            let show = users[member].totalWinnings;
+            let negative = false;
+            if (show < 0) {
+              negative = true;
+              show = show * -1;
+            }
+            return (
+              <Text key={member}>
+                {member} -
+                <Text
+                  style={{
+                    color: show === 0 ? 'black' : negative ? red : green,
+                  }}>
+                  {' '}
+                  ${show}
+                </Text>
+              </Text>
+            );
+          })}
         <Card
           onPress={() => {
             this.selectGameToView('Big 2');
             AppActions.pushScreen(componentId, 'BigTwo');
           }}
           mainText={'BigTwo'}
-          subText={'Add game'}
+          subText={'Ready To Play'}
+        />
+        <Card
+          onPress={() => {
+            // this.selectGameToView('Poker');
+            // AppActions.pushScreen(componentId, 'GameDetails');
+          }}
+          mainText={'Poker'}
+          subText={'TBD'}
         />
       </View>
     );
@@ -115,6 +131,7 @@ class Home extends Component<Props> {
 function mapStateToProps(state) {
   return {
     selectedGame: state.selectedGame,
+    gameState: state.gameState,
   };
 }
 

@@ -12,6 +12,8 @@ import {
 import {connect} from 'react-redux';
 import codePush from 'react-native-code-push';
 import * as AppActions from '../AppActions.js';
+import {gameStateActions} from '../redux/actions';
+import * as API from '../API.js';
 
 import StyleConfig from '../StyleConfig';
 
@@ -31,25 +33,35 @@ class LoadingView extends Component<{}> {
     this.checkCodePushSuccess();
   }
 
+  loadDataForApp = async () => {
+    const {setGameState} = this.props;
+    const users = await API.getAllUsers();
+    if (users) {
+      setGameState({users});
+    }
+    AppActions.startHome();
+  };
+
   checkCodePushSuccess = async () => {
     try {
       codePush.checkForUpdate().then(
         update => {
-          console.log('update..', update && !update.failedInstall);
+          // console.log('update..', update && !update.failedInstall);
           if (update && !update.failedInstall) {
             this.handleUpdate();
           } else {
-            AppActions.startHome();
+            codePush.notifyApplicationReady();
+            this.loadDataForApp();
             // this.loadDataForApp();
           }
         },
         err => {
           console.log('error 1', err);
-          AppActions.startHome();
+          this.loadDataForApp();
         },
       );
     } catch (e) {
-      AppActions.startHome();
+      this.loadDataForApp();
       console.log('error', e);
     }
   };
@@ -131,7 +143,9 @@ function mapStateToProps(state) {
   return {};
 }
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  ...gameStateActions,
+};
 
 export default connect(
   mapStateToProps,

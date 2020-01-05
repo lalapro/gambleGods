@@ -7,9 +7,9 @@
  * @lint-ignore-every XPLATJSCOPYRIGHT1
  */
 
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import * as AppActions from '../AppActions.js'
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import * as AppActions from '../AppActions.js';
 import {
   Platform,
   StyleSheet,
@@ -18,14 +18,14 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-	LayoutAnimation,
-  ScrollView
+  LayoutAnimation,
+  ScrollView,
 } from 'react-native';
-import StyleConfig from '../StyleConfig'
-import * as API from '../API.js'
-import AppImages from '../../assets/images/AppImages'
-import { Button, Card, PersonCircle } from '../components'
-import ROOMDETAILS from '../FAKEDATA.js'
+import StyleConfig from '../StyleConfig';
+import * as API from '../API.js';
+import AppImages from '../../assets/images/AppImages';
+import {Button, Card, PersonCircle} from '../components';
+import ROOMDETAILS from '../FAKEDATA.js';
 
 const {
   WIDTH,
@@ -37,8 +37,8 @@ const {
   purple,
   nobel16,
   nobel12,
-  dollyReg16
-} = StyleConfig
+  dollyReg16,
+} = StyleConfig;
 
 const styles = StyleSheet.create({
   container: {
@@ -49,28 +49,28 @@ const styles = StyleSheet.create({
   roomName: {
     ...nobel16,
   },
-	gameCard: {
-		width: WIDTH - 40,
-		height: 75,
-		backgroundColor: 'lightblue',
-		borderRadius: 5,
-		marginVertical: 20
-	},
-	menu: {
-		flexDirection: 'row',
-		width: '100%',
-		justifyContent: 'space-between',
-		backgroundColor: red
-	},
-	tabs1: {
-		flex: 1,
-		backgroundColor: green,
-		justifyContent: 'center'
-	},
-	tabs2: {
-		flex: 1,
-		justifyContent: 'center'
-	}
+  gameCard: {
+    width: WIDTH - 40,
+    height: 75,
+    backgroundColor: 'lightblue',
+    borderRadius: 5,
+    marginVertical: 20,
+  },
+  menu: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    backgroundColor: red,
+  },
+  tabs1: {
+    flex: 1,
+    backgroundColor: green,
+    justifyContent: 'center',
+  },
+  tabs2: {
+    flex: 1,
+    justifyContent: 'center',
+  },
 });
 
 type Props = {};
@@ -88,56 +88,60 @@ const LinearSlideAnimation = {
 
 class BigTwo extends Component<Props> {
   constructor(props) {
-    super(props)
-    this.state = {
-    }
+    super(props);
+    this.state = {};
   }
 
   async componentDidMount() {
-    // const
+    const data = await API.getBigTwoData();
+    if (data) {
+      this.setState({
+        history: Object.values(data),
+        keys: Object.keys(data),
+      });
+    }
   }
 
-	componentDidUpdate() {
-		LayoutAnimation.configureNext(LinearSlideAnimation);
-	}
-
+  componentDidUpdate() {
+    // LayoutAnimation.configureNext(LinearSlideAnimation);
+  }
 
   render() {
-    const { componentId, selectedGame } = this.props;
-    const { testHistory } = selectedGame
+    const {history, keys} = this.state;
+    const {componentId, selectedGame} = this.props;
+    const {testHistory} = selectedGame;
+    // console.log(history);
     return (
       <View style={styles.container}>
-				<View style={{ width: '100%', height: 50 }}/>
-        <Text style={styles.roomName}>
-					BIG TWO
-				</Text>
-        {testHistory && testHistory.map((game) => {
-          return (
-            <Card
-              onPress={() => {
-                // AppActions.pushScreen(componentId, 'GameDetails')
-              }}
-              mainText={game.date}
-              // subText={`$${game.pot}`}
-              players={game.players}
-              winner={game.winner}
-              key={game.date}/>
-          )
-        })}
-				<Button
-					text="ADD NEW GAME"
-					onPress={() => AppActions.showModal('ModalAddBigTwoRound')}
-					style={{ position: 'absolute', bottom: 40 }}
-				/>
+        <View style={{width: '100%', height: 50}} />
+        <Text style={styles.roomName}>BIG TWO</Text>
+        <ScrollView>
+          {history &&
+            history.map((game, i) => {
+              const {date, players, total} = game;
+              return (
+                <Card
+                  mainText={date}
+                  players={players}
+                  key={keys[i]}
+                  total={total}
+                />
+              );
+            })}
+        </ScrollView>
+        <Button
+          text="ADD NEW GAME"
+          onPress={() => AppActions.showModal('ModalAddBigTwoRound')}
+          style={{position: 'absolute', bottom: 40}}
+        />
       </View>
     );
   }
 }
 
-
 function mapStateToProps(state) {
   return {
-		selectedGame: state.selectedGame
+    selectedGame: state.selectedGame,
   };
 }
 

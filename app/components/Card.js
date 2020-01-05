@@ -15,15 +15,17 @@ const {
   nobel12,
   nobel22,
   dollyReg16,
+  nobelBold14,
 } = StyleConfig;
 
 const styles = StyleSheet.create({
   card: {
     width: WIDTH - 40,
     height: 75,
-    backgroundColor: 'lightblue',
+    backgroundColor: 'white',
     borderRadius: 5,
     marginVertical: 20,
+    justifyContent: 'space-between',
   },
   header: {
     ...nobel22,
@@ -40,26 +42,40 @@ const styles = StyleSheet.create({
 
 export default class Card extends Component {
   render() {
-    const {onPress, mainText, subText, players, winner} = this.props;
-    // console.log(players)
+    const {onPress, mainText, players, total, subText} = this.props;
     return (
       <TouchableOpacity style={styles.card} onPress={onPress}>
-        <Text style={styles.header}>{mainText}</Text>
-        <Text style={styles.num}>{subText}</Text>
+        <View>
+          <Text style={styles.header}>{mainText}</Text>
+          <Text style={styles.num}>{subText}</Text>
+        </View>
         {players && (
           <View
             style={{
               flexDirection: 'row',
               position: 'absolute',
               right: 0,
-              bottom: 0,
+              top: 10,
             }}>
-            {players.map(player => (
-              <PersonCircle
-                winner={winner}
-                name={player.abrv ? player.abrv : player}
+            {players.map((player, i) => (
+              <View
                 key={`$${player.abrv ? player.abrv : player}card`}
-              />
+                style={{
+                  alignItems: 'center',
+                  alignSelf: 'flex-end',
+                }}>
+                <PersonCircle
+                  winner={total[i] > 0}
+                  name={player.abrv ? player.abrv : player}
+                />
+                <Text
+                  style={{
+                    ...nobelBold14,
+                    color: total[i] > 0 ? green : red,
+                  }}>
+                  {total[i]}
+                </Text>
+              </View>
             ))}
           </View>
         )}

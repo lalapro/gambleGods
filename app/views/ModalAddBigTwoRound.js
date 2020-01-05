@@ -15,6 +15,7 @@ import {connect} from 'react-redux';
 import StyleConfig from '../StyleConfig';
 import ROOMDETAILS from '../FAKEDATA.js';
 import ModalCardsLeft from './ModalCardsLeft.js';
+import ModalEndGame from './ModalEndGame.js';
 import AppImages from '../../assets/images/AppImages';
 import {Button, Card, PersonCircle} from '../components';
 import * as AppActions from '../AppActions.js';
@@ -103,6 +104,8 @@ class ModalBigTwoRound extends Component {
       isEdit: false,
       roundSums: [],
       showNewRoundButton: false,
+      showEndGameModal: false,
+      totalToSend: [0, 0, 0, 0],
     };
   }
 
@@ -191,7 +194,7 @@ class ModalBigTwoRound extends Component {
     });
   }
 
-  endGame() {
+  async endGame() {
     const {componentId} = this.props;
     const {roundSums, currentRound} = this.state;
     if (currentRound + 1 !== roundSums.length) {
@@ -201,23 +204,24 @@ class ModalBigTwoRound extends Component {
         [
           {
             text: 'YES',
-            onPress: () => {
-              this.calculateSubmission();
-              AppActions.dismissModal(componentId);
+            onPress: async () => {
+              await this.calculateSubmission();
+              this.setState({showEndGameModal: true});
+              // AppActions.dismissModal(componentId);
             },
           },
           {text: 'NO', onPress: () => {}},
         ],
       );
     } else {
-      this.calculateSubmission();
-      AppActions.dismissModal(componentId);
+      await this.calculateSubmission();
+      this.setState({showEndGameModal: true});
       // do database shit...
     }
   }
 
-  calculateSubmission() {
-    const {players, games, roundSums, selectedPrice} = this.state;
+  async calculateSubmission() {
+    const {players, games, roundSums, selectedPrice, totalToSend} = this.state;
     const {setSelectedGame} = this.props;
     const gameHistory = {};
     const today = new Date();
@@ -229,9 +233,33 @@ class ModalBigTwoRound extends Component {
     // members
     // selectedPrice
     // roundSums (array)
-    // games
-    API.sendToDB(players, selectedPrice, games, roundSums);
-    setSelectedGame({testHistory: [gameHistory]});
+    // game
+    await setSelectedGame({
+      players,
+      games,
+      roundSums,
+      selectedPrice,
+    });
+  }
+
+  async sendToDB() {
+    const {players, games, roundSums, selectedPrice, totalToSend} = this.state;
+    const {setSelectedGame} = this.props;
+    const gameHistory = {};
+    const today = new Date();
+    const currentLocalDate = today.toLocaleDateString();
+    gameHistory.players = players;
+    gameHistory.date = currentLocalDate;
+    gameHistory.rounds = games;
+    gameHistory.roundSums = roundSums;
+    API.sendToDB(
+      players,
+      selectedPrice,
+      games,
+      roundSums,
+      totalToSend,
+      currentLocalDate,
+    );
   }
 
   calculatePoints(player, x, y, isEdit) {
@@ -367,7 +395,9 @@ class ModalBigTwoRound extends Component {
       roundSums,
       games,
       showNewRoundButton,
+      showEndGameModal,
     } = this.state;
+    const {componentId} = this.props;
     return (
       <View style={styles.content}>
         <View style={{width: WIDTH, height: 50}} />
@@ -580,6 +610,9 @@ class ModalBigTwoRound extends Component {
               style={{width: 150, height: 30, marginTop: 10}}
             />
           )}
+          <View
+            style={{height: 300, width: '100%', backgroundColor: 'white'}}
+          />
         </ScrollView>
         <Button
           text="END GAME"
@@ -590,6 +623,19 @@ class ModalBigTwoRound extends Component {
           <ModalCardsLeft
             close={() => this.setState({showModal: false})}
             setNumber={number => this.handlePlayerCards(number)}
+          />
+        </Modal>
+        <Modal visible={showEndGameModal} transparent animationType="fade">
+          <ModalEndGame
+            setTotalsToSend={totalToSend => {
+              this.setState({totalToSend}, () => this.sendToDB());
+            }}
+            close={() => {
+              this.setState({showEndGameModal: false});
+              setTimeout(() => {
+                AppActions.dismissModal(componentId);
+              }, 750);
+            }}
           />
         </Modal>
       </View>

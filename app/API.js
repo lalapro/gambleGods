@@ -7,24 +7,68 @@ export async function onStartUp() {
   database().setPersistenceCacheSizeBytes(2000000);
 }
 
-export async function sendToDB(players, wager, games, results) {
+export async function sendToDB(
+  players,
+  wager,
+  games,
+  roundResults,
+  total,
+  date,
+) {
+  const snapshot = await database()
+    .ref('users')
+    .once('value');
+  if (snapshot._snapshot) {
+    const users = snapshot._snapshot.value;
+    for (let key in users) {
+      let abrv = users[key].abrv;
+      const index = players.indexOf(abrv);
+      if (index > -1) {
+        const newTotalWinnings = (users[key].totalWinnings += total[index]);
+        const newBigTwoWinnings = (users[key].bigTwoWinnings += total[index]);
+        database()
+          .ref('users/' + key)
+          .update({
+            totalWinnings: newTotalWinnings,
+            bigTwoWinnings: newBigTwoWinnings,
+          });
+      }
+    }
+  }
   database()
     .ref('bigTwo')
     .push({
       players,
       wager,
       games,
-      results,
+      roundResults,
+      total,
+      date,
     });
 }
 
-export async function addGameDataToDB() {
-  database()
+export async function getBigTwoData() {
+  const snapshot = await database()
     .ref('bigTwo')
-    .push({
-      players: ['JY', 'SX', 'MT', 'PC'],
-      test: 'jj',
-    });
+    .orderByKey()
+    .limitToFirst(50)
+    .once('value');
+  if (snapshot._snapshot) {
+    return snapshot._snapshot.value;
+  } else {
+    return false;
+  }
+}
+
+export async function getAllUsers() {
+  const snapshot = await database()
+    .ref('users')
+    .once('value');
+  if (snapshot._snapshot) {
+    return snapshot._snapshot.value;
+  } else {
+    return false;
+  }
 }
 
 export async function checkRoomId(name) {

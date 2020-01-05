@@ -4,6 +4,7 @@ import GameDetails from './app/views/GameDetails';
 import BigTwo from './app/views/BigTwo';
 import LoadingView from './app/views/LoadingView';
 import ModalAddBigTwoRound from './app/views/ModalAddBigTwoRound';
+import ModalEndGame from './app/views/ModalEndGame';
 import {Navigation} from 'react-native-navigation';
 import store from './app/redux/store';
 import {Provider} from 'react-redux';
@@ -68,6 +69,16 @@ Navigation.registerComponent(
     </Provider>
   ),
   () => ModalAddBigTwoRound,
+);
+
+Navigation.registerComponent(
+  'ModalEndGame',
+  () => props => (
+    <Provider store={store}>
+      <ModalEndGame {...props} />
+    </Provider>
+  ),
+  () => ModalEndGame,
 );
 
 // Navigation.registerComponentWithRedux('app.Home', () => Home, Provider, store);
