@@ -56,6 +56,12 @@ const MEMBERS = [
     winnings: 0,
     buyIns: 0,
   },
+  {
+    name: 'Jonathan Chan',
+    abrv: 'JC',
+    winnings: 0,
+    buyIns: 0,
+  },
 ];
 
 const POKER = {

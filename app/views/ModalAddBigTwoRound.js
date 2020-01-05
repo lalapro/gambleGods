@@ -283,6 +283,7 @@ class ModalBigTwoRound extends Component {
       isEdit,
       games,
       currentRound,
+      selectedPrice,
     } = this.state;
     const clone = games[currentRound];
     let penalty = 0;
@@ -302,7 +303,7 @@ class ModalBigTwoRound extends Component {
     } else {
       penalty = cardsLeft * -1;
     }
-    clone[y][x] = penalty;
+    clone[y][x] = penalty * selectedPrice;
     const account = isEdit
       ? currentSetPlayersAccountedFor
       : currentSetPlayersAccountedFor + 1;
