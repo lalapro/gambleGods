@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import React, { Component } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import StyleConfig from '../StyleConfig';
-import {Button, Card, PersonCircle} from '../components';
+import { Button, Card, PersonCircle } from '../components';
 import * as AppActions from '../AppActions.js';
 const {
   WIDTH,
@@ -16,8 +16,8 @@ const {
   dollyReg16,
   nobelBold18,
 } = StyleConfig;
-import {connect} from 'react-redux';
-import {selectedGameActions} from '../redux/actions';
+import { connect } from 'react-redux';
+import { selectedGameActions } from '../redux/actions';
 
 const styles = StyleSheet.create({
   content: {
@@ -26,18 +26,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightblue',
     borderRadius: 5,
     marginTop: 100,
-    alignSelf: 'center',
+    alignSelf: 'center'
   },
   header: {
     ...nobel22,
     marginLeft: 10,
     marginTop: 10,
-    textAlign: 'left',
+    textAlign: 'left'
   },
   num: {
     ...nobel12,
     marginLeft: 10,
-    textAlign: 'left',
+    textAlign: 'left'
   },
 });
 
@@ -54,8 +54,8 @@ class ModalEndGame extends Component {
   }
 
   calculateWinningsForPlayer() {
-    const {selectedGame, setTotalsToSend} = this.props;
-    const {players, games, roundSums} = selectedGame;
+    const { selectedGame, setTotalsToSend } = this.props;
+    const { players, games, roundSums } = selectedGame;
     let totals = [0, 0, 0, 0];
     for (let i = 0; i < 4; i++) {
       let total = 0;
@@ -64,31 +64,35 @@ class ModalEndGame extends Component {
       }
       totals[i] = total;
     }
-    setTotalsToSend(totals);
-    this.setState({totals});
+    if (games.length) {
+      setTotalsToSend(totals);
+      this.setState({ totals });
+    }
   }
 
   render() {
-    const {totals} = this.state;
-    const {close, selectedGame} = this.props;
-    const {players, games, roundSums} = selectedGame;
+    const { totals } = this.state;
+    const { close, selectedGame } = this.props;
+    const { players, games, roundSums } = selectedGame;
     return (
       <View style={styles.content}>
-        <Text style={{...nobelBold18, marginTop: 20, marginBottom: 10}}>
+        <Text style={{ ...nobelBold18, marginTop: 20, marginBottom: 10 }}>
           GAME ENDED!
         </Text>
         {players &&
           players.map((player, i) => {
             return (
               <View
-                style={{flexDirection: 'row', alignItems: 'center'}}
-                key={`${player}end`}>
+                style={{ flexDirection: 'row', alignItems: 'center' }}
+                key={`${player}end`}
+              >
                 <PersonCircle name={player} color={green} />
                 <Text
                   style={{
                     ...nobelBold18,
                     color: totals[i] > 0 ? green : red,
-                  }}>
+                  }}
+                >
                   {totals[i] > 0 ? `+${totals[i]}` : totals[i]}
                 </Text>
               </View>
@@ -99,13 +103,13 @@ class ModalEndGame extends Component {
             flexDirection: 'row',
             flexWrap: 'wrap',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'center'
           }}
         />
         <Button
           onPress={close}
           text={'DISMISS'}
-          style={{position: 'absolute', bottom: 20}}
+          style={{ position: 'absolute', bottom: 20 }}
         />
       </View>
     );
@@ -124,5 +128,5 @@ const mapDispatchToProps = {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
+  mapDispatchToProps
 )(ModalEndGame);

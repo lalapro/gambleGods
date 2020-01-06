@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,15 +9,15 @@ import {
   Linking,
   PushNotificationIOS,
 } from 'react-native';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import codePush from 'react-native-code-push';
 import * as AppActions from '../AppActions.js';
-import {gameStateActions} from '../redux/actions';
+import { gameStateActions } from '../redux/actions';
 import * as API from '../API.js';
 
 import StyleConfig from '../StyleConfig';
 
-const {WIDTH, HEIGHT} = StyleConfig;
+const { WIDTH, HEIGHT } = StyleConfig;
 
 class LoadingView extends Component<{}> {
   constructor(props) {
@@ -34,14 +34,14 @@ class LoadingView extends Component<{}> {
   }
 
   loadDataForApp = async () => {
-    const {setGameState} = this.props;
+    const { setGameState } = this.props;
     const users = await API.getAllUsers();
     let newUsers = Object.values(users).sort(
-      (a, b) => a.totalWinnings > b.totalWinnings,
+      (a, b) => a.totalWinnings < b.totalWinnings
     );
-    console.log(newUsers);
+    newUsers = Object.assign(newUsers);
     if (users) {
-      setGameState({users});
+      setGameState({ users: newUsers });
     }
     AppActions.startHome();
   };
@@ -62,7 +62,7 @@ class LoadingView extends Component<{}> {
         err => {
           console.log('error 1', err);
           this.loadDataForApp();
-        },
+        }
       );
     } catch (e) {
       this.loadDataForApp();
@@ -71,7 +71,7 @@ class LoadingView extends Component<{}> {
   };
 
   handleUpdate() {
-    const {componentId} = this.props;
+    const { componentId } = this.props;
     codePush
       .sync(
         {
@@ -79,7 +79,7 @@ class LoadingView extends Component<{}> {
           installMode: codePush.InstallMode.IMMEDIATE,
         },
         undefined,
-        progress => this.handleUpdateProgress(progress),
+        progress => this.handleUpdateProgress(progress)
       )
       .then(() => {
         codePush.notifyApplicationReady();
@@ -94,23 +94,23 @@ class LoadingView extends Component<{}> {
   handleUpdateProgress(progress) {
     const codePushProgressPercentage =
       progress.receivedBytes / progress.totalBytes;
-    this.setState({codePushProgressPercentage});
+    this.setState({ codePushProgressPercentage });
   }
 
   renderProgressBars() {
-    const {codePushProgressPercentage} = this.state;
+    const { codePushProgressPercentage } = this.state;
     const full = WIDTH * 0.7;
     const percentage = full * codePushProgressPercentage;
     if (codePushProgressPercentage > 0) {
       return (
-        <View style={{position: 'absolute', width: WIDTH, height: HEIGHT}}>
+        <View style={{ position: 'absolute', width: WIDTH, height: HEIGHT }}>
           <View
             style={[
               styles.progressBar,
-              {width: full, backgroundColor: '#424242'},
+              { width: full, backgroundColor: '#424242' },
             ]}
           />
-          <View style={[styles.progressBar, {width: percentage}]} />
+          <View style={[styles.progressBar, { width: percentage }]} />
         </View>
       );
     }
@@ -124,8 +124,9 @@ class LoadingView extends Component<{}> {
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: 'black',
-        }}>
+          backgroundColor: 'black'
+        }}
+      >
         {this.renderProgressBars()}
       </View>
     );
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
     left: WIDTH * 0.15,
     borderRadius: 3.5,
     height: 4,
-    backgroundColor: 'rgba(255, 0, 255, 1)',
+    backgroundColor: 'rgba(255, 0, 255, 1)'
   },
 });
 
@@ -153,5 +154,5 @@ const mapDispatchToProps = {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
+  mapDispatchToProps
 )(LoadingView);

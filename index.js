@@ -2,8 +2,10 @@ import React from 'react';
 import Home from './app/views/Home';
 import GameDetails from './app/views/GameDetails';
 import BigTwo from './app/views/BigTwo';
+import Stats from './app/views/Stats';
 import LoadingView from './app/views/LoadingView';
 import ModalAddBigTwoRound from './app/views/ModalAddBigTwoRound';
+import ModalBigTwoGameHistory from './app/views/ModalBigTwoGameHistory';
 import ModalEndGame from './app/views/ModalEndGame';
 import { Navigation } from 'react-native-navigation';
 import store from './app/redux/store';
@@ -79,6 +81,26 @@ Navigation.registerComponent(
     </Provider>
   ),
   () => ModalEndGame
+);
+
+Navigation.registerComponent(
+  'ModalBigTwoGameHistory',
+  () => props => (
+    <Provider store={store}>
+      <ModalBigTwoGameHistory {...props} />
+    </Provider>
+  ),
+  () => ModalBigTwoGameHistory
+);
+
+Navigation.registerComponent(
+  'Stats',
+  () => props => (
+    <Provider store={store}>
+      <Stats {...props} />
+    </Provider>
+  ),
+  () => Stats
 );
 
 // Navigation.registerComponentWithRedux('app.Home', () => Home, Provider, store);

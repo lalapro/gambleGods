@@ -1,4 +1,4 @@
-import {Navigation} from 'react-native-navigation';
+import { Navigation } from 'react-native-navigation';
 
 export function pushScreen(currentScreen, newScreen, options = {}) {
   if (!currentScreen) {
@@ -12,14 +12,18 @@ export function pushScreen(currentScreen, newScreen, options = {}) {
   });
 }
 
+export function popScreen(currentScreen) {
+  Navigation.pop(currentScreen);
+}
+
 export function showModal(screen) {
   Navigation.showModal({
     component: {
       name: screen,
       id: screen,
       options: {
-        layout: {backgroundColor: 'transparent'},
-        modalPresentationStyle: 'fullScreen',
+        layout: { backgroundColor: 'transparent' },
+        modalPresentationStyle: 'fullScreen'
       },
     },
   });
@@ -33,7 +37,7 @@ export function startHome() {
           {
             component: {
               id: 'Home',
-              name: 'Home',
+              name: 'Home'
             },
           },
         ],

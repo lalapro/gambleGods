@@ -7,8 +7,8 @@
  * @lint-ignore-every XPLATJSCOPYRIGHT1
  */
 
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import * as AppActions from '../AppActions.js';
 import {
   Platform,
@@ -24,8 +24,9 @@ import {
 import StyleConfig from '../StyleConfig';
 import * as API from '../API.js';
 import AppImages from '../../assets/images/AppImages';
-import {Button, Card, PersonCircle} from '../components';
+import { Button, Card, PersonCircle } from '../components';
 import ROOMDETAILS from '../FAKEDATA.js';
+import { gameStateActions } from '../redux/actions';
 
 const {
   WIDTH,
@@ -38,6 +39,7 @@ const {
   nobel16,
   nobel12,
   dollyReg16,
+  nobelBold22
 } = StyleConfig;
 
 const styles = StyleSheet.create({
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
     backgroundColor: blue,
   },
   roomName: {
-    ...nobel16,
+    ...nobelBold22,
   },
   gameCard: {
     width: WIDTH - 40,
@@ -65,12 +67,21 @@ const styles = StyleSheet.create({
   tabs1: {
     flex: 1,
     backgroundColor: green,
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   tabs2: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
+  backTouch: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    backgroundColor: 'transparent',
+    width: 50,
+    height: 50,
+    justifyContent: 'center'
+  }
 });
 
 type Props = {};
@@ -97,7 +108,7 @@ class BigTwo extends Component<Props> {
     if (data) {
       this.setState({
         history: Object.values(data),
-        keys: Object.keys(data),
+        keys: Object.keys(data)
       });
     }
   }
@@ -107,19 +118,27 @@ class BigTwo extends Component<Props> {
   }
 
   render() {
-    const {history, keys} = this.state;
-    const {componentId, selectedGame} = this.props;
-    const {testHistory} = selectedGame;
+    const { history, keys } = this.state;
+    const { componentId, selectedGame, setGameState } = this.props;
+    const { testHistory } = selectedGame;
     // console.log(history);
     return (
       <View style={styles.container}>
-        <View style={{width: '100%', height: 50}} />
+        <View style={{ width: '100%', height: 50 }} />
+        <TouchableOpacity
+          onPress={() => AppActions.popScreen(componentId)}
+          style={styles.backTouch}
+        >
+          <Image
+            source={AppImages.back}
+            style={{ width: 15, height: 15, resizeMode: 'contain' }}
+          />
+        </TouchableOpacity>
         <Text style={styles.roomName}>BIG TWO</Text>
         <ScrollView>
           {history &&
             history.map((game, i) => {
-              console.log(game);
-              const {date, players, total, games} = game;
+              const { date, players, total, games } = game;
               return (
                 <Card
                   mainText={date}
@@ -127,17 +146,25 @@ class BigTwo extends Component<Props> {
                   key={keys[i]}
                   total={total}
                   subText={`${games.length} rounds`}
+                  onPress={async () => {
+                    await setGameState({ selectedHistory: game });
+                    AppActions.showModal('ModalBigTwoGameHistory');
+                  }}
                 />
               );
             })}
           <View
-            style={{height: 300, width: '100%', backgroundColor: 'white'}}
+            style={{
+              height: 70,
+              width: '100%',
+              backgroundColor: 'transparent'
+            }}
           />
         </ScrollView>
         <Button
           text="ADD NEW GAME"
           onPress={() => AppActions.showModal('ModalAddBigTwoRound')}
-          style={{position: 'absolute', bottom: 40}}
+          style={{ position: 'absolute', bottom: 40 }}
         />
       </View>
     );
@@ -147,7 +174,15 @@ class BigTwo extends Component<Props> {
 function mapStateToProps(state) {
   return {
     selectedGame: state.selectedGame,
+    gameState: state.gameState
   };
 }
 
-export default connect(mapStateToProps)(BigTwo);
+const mapDispatchToProps = {
+  ...gameStateActions,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(BigTwo);

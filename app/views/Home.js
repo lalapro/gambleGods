@@ -7,8 +7,8 @@
  * @lint-ignore-every XPLATJSCOPYRIGHT1
  */
 
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   Platform,
   StyleSheet,
@@ -22,10 +22,10 @@ import {
 import StyleConfig from '../StyleConfig';
 import * as API from '../API.js';
 import AppImages from '../../assets/images/AppImages';
-import {Button, Card} from '../components';
+import { Button, Card } from '../components';
 import ROOMDETAILS from '../FAKEDATA.js';
 import * as AppActions from '../AppActions.js';
-import {selectedGameActions} from '../redux/actions';
+import { selectedGameActions } from '../redux/actions';
 
 const {
   WIDTH,
@@ -36,7 +36,8 @@ const {
   green,
   purple,
   nobel16,
-  nobel12,
+  nobelBold22,
+  nobel14,
   dollyReg16,
 } = StyleConfig;
 
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
     backgroundColor: blue,
   },
   roomName: {
-    ...nobel16,
+    ...nobelBold22,
   },
 });
 
@@ -57,7 +58,7 @@ class Home extends Component<Props> {
   constructor(props) {
     super(props);
     this.state = {
-      roomName: 'Dark Table',
+      roomName: 'DARK TABLE',
       showHiddenStats: false,
     };
   }
@@ -67,8 +68,8 @@ class Home extends Component<Props> {
   }
 
   async selectGameToView() {
-    const {setSelectedGame} = this.props;
-    setSelectedGame({...ROOMDETAILS.poker});
+    const { setSelectedGame } = this.props;
+    setSelectedGame({ ...ROOMDETAILS.poker });
   }
 
   // async fetchRoom() {
@@ -78,35 +79,37 @@ class Home extends Component<Props> {
   // }
 
   render() {
-    const {componentId, selectedGameActions, gameState} = this.props;
-    const {roomName, showHiddenStats} = this.state;
-    const {users} = gameState;
-    const {gameTypes, members} = ROOMDETAILS;
+    const { componentId, selectedGameActions, gameState } = this.props;
+    const { roomName, showHiddenStats } = this.state;
+    const { users } = gameState;
+    const { gameTypes, members } = ROOMDETAILS;
     return (
       <View style={styles.container}>
-        <View style={{width: '100%', height: 50}} />
+        <View style={{ width: '100%', height: 50 }} />
         <TouchableOpacity
           onPress={() => {
-            this.setState({showHiddenStats: !showHiddenStats});
-          }}>
+            this.setState({ showHiddenStats: !showHiddenStats });
+          }}
+        >
           <Text style={styles.roomName}>{roomName}</Text>
         </TouchableOpacity>
         {showHiddenStats &&
           users &&
-          Object.keys(users).map(member => {
-            let show = users[member].totalWinnings;
+          users.map(member => {
+            let show = member.totalWinnings;
             let negative = false;
             if (show < 0) {
               negative = true;
               show = show * -1;
             }
             return (
-              <Text key={member}>
-                {member} -
+              <Text key={member.name} style={{ ...nobel14 }}>
+                {member.name} -
                 <Text
                   style={{
                     color: show === 0 ? 'black' : negative ? red : green,
-                  }}>
+                  }}
+                >
                   {' '}
                   ${show}
                 </Text>
@@ -129,6 +132,13 @@ class Home extends Component<Props> {
           mainText={'Poker'}
           subText={'TBD'}
         />
+        <Card
+          onPress={() => {
+            AppActions.pushScreen(componentId, 'Stats');
+          }}
+          mainText={'Stats'}
+          subText={'WIP'}
+        />
       </View>
     );
   }
@@ -147,5 +157,5 @@ const mapDispatchToProps = {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
+  mapDispatchToProps
 )(Home);

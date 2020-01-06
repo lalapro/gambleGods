@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,15 +11,15 @@ import {
   TextInput,
   Modal,
 } from 'react-native';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import StyleConfig from '../StyleConfig';
 import ROOMDETAILS from '../FAKEDATA.js';
 import ModalCardsLeft from './ModalCardsLeft.js';
 import ModalEndGame from './ModalEndGame.js';
 import AppImages from '../../assets/images/AppImages';
-import {Button, Card, PersonCircle} from '../components';
+import { Button, Card, PersonCircle } from '../components';
 import * as AppActions from '../AppActions.js';
-import {selectedGameActions} from '../redux/actions';
+import { selectedGameActions } from '../redux/actions';
 import * as API from '../API.js';
 
 const {
@@ -33,19 +33,18 @@ const {
   red,
 } = StyleConfig;
 
-const {members} = ROOMDETAILS;
-
 const styles = StyleSheet.create({
   content: {
     flex: 1,
     backgroundColor: white,
     alignSelf: 'center',
+    paddingHorizontal: 20
   },
   firstTimeSplash: {
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
-    position: 'absolute',
+    position: 'absolute'
   },
   bottomContainer: {
     backgroundColor: white,
@@ -85,10 +84,11 @@ const LinearSlideAnimation = {
 class ModalBigTwoRound extends Component {
   constructor(props) {
     super(props);
+    const { gameState } = props;
     this.state = {
-      members,
+      members: gameState.users,
       players: [],
-      priceOptions: [1, 2, 3, 4],
+      priceOptions: [1, 2, 3, 4, 5],
       rounds: [1, 2, 3, 4],
       lockPlayers: false,
       selectedPrice: 0,
@@ -116,7 +116,7 @@ class ModalBigTwoRound extends Component {
   }
 
   addPlayer(playa) {
-    const {players, lockPlayers, selectedPrice, games} = this.state;
+    const { players, lockPlayers, selectedPrice, games } = this.state;
     if (lockPlayers) {
       return;
     }
@@ -125,7 +125,7 @@ class ModalBigTwoRound extends Component {
     if (found < 0) {
       if (clone.length < 4) {
         clone.push(playa);
-        this.setState({players: clone});
+        this.setState({ players: clone });
         if (clone.length === 4 && selectedPrice > 0) {
           Alert.alert('', 'Lock players?', [
             {
@@ -148,7 +148,7 @@ class ModalBigTwoRound extends Component {
               text: 'NO',
               onPress: () => {
                 clone.pop();
-                this.setState({players: clone});
+                this.setState({ players: clone });
               },
             },
           ]);
@@ -156,13 +156,13 @@ class ModalBigTwoRound extends Component {
       }
     } else {
       clone.splice(found, 1);
-      this.setState({players: clone});
+      this.setState({ players: clone });
     }
   }
 
   selectPrice(price) {
-    const {players, games} = this.state;
-    this.setState({selectedPrice: price}, () => {
+    const { players, games } = this.state;
+    this.setState({ selectedPrice: price }, () => {
       if (players.length === 4) {
         Alert.alert('', 'Lock players?', [
           {
@@ -186,7 +186,7 @@ class ModalBigTwoRound extends Component {
             onPress: () => {
               const clone = players;
               clone.pop();
-              this.setState({players: clone});
+              this.setState({ players: clone });
             },
           },
         ]);
@@ -195,8 +195,8 @@ class ModalBigTwoRound extends Component {
   }
 
   async endGame() {
-    const {componentId} = this.props;
-    const {roundSums, currentRound} = this.state;
+    const { componentId } = this.props;
+    const { roundSums, currentRound } = this.state;
     if (currentRound + 1 !== roundSums.length) {
       Alert.alert(
         '',
@@ -206,23 +206,29 @@ class ModalBigTwoRound extends Component {
             text: 'YES',
             onPress: async () => {
               await this.calculateSubmission();
-              this.setState({showEndGameModal: true});
+              this.setState({ showEndGameModal: true });
               // AppActions.dismissModal(componentId);
             },
           },
-          {text: 'NO', onPress: () => {}},
-        ],
+          { text: 'NO', onPress: () => {} },
+        ]
       );
     } else {
       await this.calculateSubmission();
-      this.setState({showEndGameModal: true});
+      this.setState({ showEndGameModal: true });
       // do database shit...
     }
   }
 
   async calculateSubmission() {
-    const {players, games, roundSums, selectedPrice, totalToSend} = this.state;
-    const {setSelectedGame} = this.props;
+    const {
+      players,
+      games,
+      roundSums,
+      selectedPrice,
+      totalToSend,
+    } = this.state;
+    const { setSelectedGame } = this.props;
     const gameHistory = {};
     const today = new Date();
     const currentLocalDate = today.toLocaleDateString();
@@ -243,23 +249,36 @@ class ModalBigTwoRound extends Component {
   }
 
   async sendToDB() {
-    const {players, games, roundSums, selectedPrice, totalToSend} = this.state;
-    const {setSelectedGame} = this.props;
+    const {
+      players,
+      games,
+      roundSums,
+      selectedPrice,
+      totalToSend,
+    } = this.state;
+    const { setSelectedGame } = this.props;
     const gameHistory = {};
     const today = new Date();
     const currentLocalDate = today.toLocaleDateString();
+    const filteredGames = this.filterGame(games);
     gameHistory.players = players;
     gameHistory.date = currentLocalDate;
-    gameHistory.rounds = games;
+    gameHistory.rounds = filteredGames;
     gameHistory.roundSums = roundSums;
     API.sendToDB(
       players,
       selectedPrice,
-      games,
+      filteredGames,
       roundSums,
       totalToSend,
-      currentLocalDate,
+      currentLocalDate
     );
+  }
+
+  filterGame(arr) {
+    if (JSON.stringify(arr[arr.length - 1]) === "[0,0,0,0]") {
+      return arr.slice(0, arr.length - 1);
+    }
   }
 
   calculatePoints(player, x, y, isEdit) {
@@ -308,7 +327,7 @@ class ModalBigTwoRound extends Component {
       ? currentSetPlayersAccountedFor
       : currentSetPlayersAccountedFor + 1;
 
-    this.setState({currentSetPlayersAccountedFor: account}, () => {
+    this.setState({ currentSetPlayersAccountedFor: account }, () => {
       if (this.state.currentSetPlayersAccountedFor === 3) {
         for (let i = 0; i < clone[y].length; i++) {
           if (clone[y][i] === 0) {
@@ -317,7 +336,7 @@ class ModalBigTwoRound extends Component {
           }
         }
       }
-      this.setState({showModal: false});
+      this.setState({ showModal: false });
 
       for (let i = 0; i < clone[y].length; i++) {
         if (clone[y][i] === 0) {
@@ -334,7 +353,7 @@ class ModalBigTwoRound extends Component {
             if (this.state.currentSet === 5) {
               this.handleRoundCalculation();
             }
-          },
+          }
         );
       }
     });
@@ -355,7 +374,7 @@ class ModalBigTwoRound extends Component {
   }
 
   handleRoundCalculation() {
-    const {games, roundSums, currentRound} = this.state;
+    const { games, roundSums, currentRound } = this.state;
     let currentRoundSum = [];
     for (let i = 0; i < 4; i++) {
       let playerWinnings = 0;
@@ -372,7 +391,7 @@ class ModalBigTwoRound extends Component {
   }
 
   addNewRound() {
-    const {games, currentRound} = this.state;
+    const { games, currentRound } = this.state;
     const GAME = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
     this.setState({
       games: [...games, GAME],
@@ -398,19 +417,20 @@ class ModalBigTwoRound extends Component {
       showNewRoundButton,
       showEndGameModal,
     } = this.state;
-    const {componentId} = this.props;
+    const { componentId } = this.props;
     return (
       <View style={styles.content}>
-        <View style={{width: WIDTH, height: 50}} />
+        <View style={{ width: WIDTH, height: 50 }} />
         {lockPlayers ? (
           <View>
-            <Text style={{...nobelBold18}}>GAME STARTED</Text>
+            <Text style={{ ...nobelBold18 }}>GAME STARTED</Text>
             <View
               style={{
                 flexDirection: 'row',
                 marginTop: 20,
-                alignSelf: 'center',
-              }}>
+                alignSelf: 'center'
+              }}
+            >
               {players.map(player => (
                 <PersonCircle
                   name={player}
@@ -419,27 +439,30 @@ class ModalBigTwoRound extends Component {
                 />
               ))}
             </View>
-            <Text style={{...nobelBold18, marginTop: 5, color: green}}>
+            <Text style={{ ...nobelBold18, marginTop: 5, color: green }}>
               ${selectedPrice}
-              <Text style={{...nobelBold18, marginTop: 5, color: black}}>
+              <Text style={{ ...nobelBold18, marginTop: 5, color: black }}>
                 {' '}
                 per card
               </Text>
             </Text>
           </View>
         ) : (
-          <View>
-            <Text style={{...nobelBold18}}>GAME CONFIG</Text>
-            <Text style={{...nobelBold12, marginTop: 20}}>1) ADD PLAYERS</Text>
+          <View style={{ backgroundColor: 'white' }}>
+            <Text style={{ ...nobelBold18 }}>GAME CONFIG</Text>
+            <Text style={{ ...nobelBold12, marginTop: 20 }}>
+              1) ADD PLAYERS
+            </Text>
             <View
               style={{
                 flexDirection: 'row',
                 marginTop: 20,
-                alignSelf: 'center',
-              }}>
+                alignSelf: 'center'
+              }}
+            >
               {members &&
                 members.map(player => {
-                  const {abrv} = player;
+                  const { abrv } = player;
                   if (abrv === undefined) {
                     return (
                       <PersonCircle
@@ -453,7 +476,8 @@ class ModalBigTwoRound extends Component {
                   return (
                     <TouchableOpacity
                       onPress={() => this.addPlayer(abrv)}
-                      key={`${player.name}add`}>
+                      key={`${player.name}add`}
+                    >
                       <PersonCircle
                         name={abrv}
                         color={found ? green : 'lightgrey'}
@@ -462,7 +486,7 @@ class ModalBigTwoRound extends Component {
                   );
                 })}
             </View>
-            <Text style={{...nobelBold12, marginTop: 30}}>
+            <Text style={{ ...nobelBold12, marginTop: 30 }}>
               2) DOLLARS PER CARD
             </Text>
             <View
@@ -472,7 +496,8 @@ class ModalBigTwoRound extends Component {
                 justifyContent: 'space-between',
                 alignSelf: 'center',
                 marginTop: 20,
-              }}>
+              }}
+            >
               {priceOptions.map(dolla => {
                 const chosen = selectedPrice === dolla;
                 return (
@@ -487,8 +512,9 @@ class ModalBigTwoRound extends Component {
                       backgroundColor: chosen ? green : 'lightgrey',
                       marginHorizontal: 2,
                     }}
-                    key={`${dolla}priceOpt`}>
-                    <Text style={{...nobelBold12}}>${dolla}</Text>
+                    key={`${dolla}priceOpt`}
+                  >
+                    <Text style={{ ...nobelBold12 }}>${dolla}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -503,11 +529,11 @@ class ModalBigTwoRound extends Component {
             marginTop: 20,
           }}
         />
-        <ScrollView style={{marginTop: 0}}>
+        <ScrollView style={{ marginTop: 0 }}>
           {games.map((game, i) => {
             return (
               <View key={`round${i}`}>
-                <Text style={{...nobelBold18, marginTop: 10}}>
+                <Text style={{ ...nobelBold18, marginTop: 10 }}>
                   ROUND {i + 1}
                 </Text>
                 <View
@@ -517,11 +543,12 @@ class ModalBigTwoRound extends Component {
                     justifyContent: 'space-between',
                     alignSelf: 'center',
                     marginTop: 20,
-                  }}>
+                  }}
+                >
                   {players.map((player, x) => {
                     return (
                       <View key={`${player}roundAdd`}>
-                        <Text style={{...nobelBold18}}>{player}</Text>
+                        <Text style={{ ...nobelBold18 }}>{player}</Text>
                         {games[i] &&
                           games[i].map((set, y) => {
                             if (y + 1 > currentSet && currentRound === i) {
@@ -530,16 +557,18 @@ class ModalBigTwoRound extends Component {
                             if (set[x] !== 0) {
                               return (
                                 <TouchableOpacity
-                                  style={{marginTop: 2}}
+                                  style={{ marginTop: 2 }}
                                   key={`${player}${[x]}${[y]}`}
                                   onPress={() =>
                                     this.calculatePoints(player, x, y, true)
-                                  }>
+                                  }
+                                >
                                   <Text
                                     style={{
                                       ...nobelBold18,
                                       color: set[x] > 0 ? green : red,
-                                    }}>
+                                    }}
+                                  >
                                     {set[x] > 0 ? `+${set[x]}` : set[x]}
                                   </Text>
                                 </TouchableOpacity>
@@ -547,17 +576,18 @@ class ModalBigTwoRound extends Component {
                             }
                             return (
                               <TouchableOpacity
-                                style={{marginTop: 2}}
+                                style={{ marginTop: 2 }}
                                 onPress={() =>
                                   this.calculatePoints(player, x, y, false)
                                 }
-                                key={`${player}${[x]}${[y]}`}>
+                                key={`${player}${[x]}${[y]}`}
+                              >
                                 <Image
                                   source={AppImages.card}
                                   style={{
                                     width: 40,
                                     height: 40,
-                                    resizeMode: 'contain',
+                                    resizeMode: 'contain'
                                   }}
                                 />
                               </TouchableOpacity>
@@ -583,8 +613,9 @@ class ModalBigTwoRound extends Component {
                         flexDirection: 'row',
                         width: WIDTH - 80,
                         justifyContent: 'space-between',
-                        alignSelf: 'center',
-                      }}>
+                        alignSelf: 'center'
+                      }}
+                    >
                       {roundSums[i].map((profit, m) => {
                         return (
                           <Text
@@ -592,7 +623,8 @@ class ModalBigTwoRound extends Component {
                               ...nobelBold18,
                               color: profit > 0 ? green : red,
                             }}
-                            key={`${profit}${i}${m}sums`}>
+                            key={`${profit}${i}${m}sums`}
+                          >
                             {profit > 0 ? `+${profit}` : profit}
                           </Text>
                         );
@@ -607,32 +639,32 @@ class ModalBigTwoRound extends Component {
             <Button
               text="NEW ROUND"
               onPress={() => this.addNewRound()}
-              textStyle={{fontSize: 12}}
-              style={{width: 150, height: 30, marginTop: 10}}
+              textStyle={{ fontSize: 12 }}
+              style={{ width: 150, height: 30, marginTop: 10 }}
             />
           )}
           <View
-            style={{height: 300, width: '100%', backgroundColor: 'white'}}
+            style={{ height: 300, width: '100%', backgroundColor: 'white' }}
           />
         </ScrollView>
         <Button
           text="END GAME"
           onPress={() => this.endGame()}
-          style={{position: 'absolute', bottom: 40, width: WIDTH - 40}}
+          style={{ position: 'absolute', bottom: 40, width: WIDTH - 40 }}
         />
         <Modal visible={showModal} transparent animationType="fade">
           <ModalCardsLeft
-            close={() => this.setState({showModal: false})}
+            close={() => this.setState({ showModal: false })}
             setNumber={number => this.handlePlayerCards(number)}
           />
         </Modal>
         <Modal visible={showEndGameModal} transparent animationType="fade">
           <ModalEndGame
             setTotalsToSend={totalToSend => {
-              this.setState({totalToSend}, () => this.sendToDB());
+              this.setState({ totalToSend }, () => this.sendToDB());
             }}
             close={() => {
-              this.setState({showEndGameModal: false});
+              this.setState({ showEndGameModal: false });
               setTimeout(() => {
                 AppActions.dismissModal(componentId);
               }, 750);
@@ -645,7 +677,9 @@ class ModalBigTwoRound extends Component {
 }
 
 function mapStateToProps(state) {
-  return {};
+  return {
+    gameState: state.gameState
+  };
 }
 
 const mapDispatchToProps = {
@@ -654,5 +688,5 @@ const mapDispatchToProps = {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
+  mapDispatchToProps
 )(ModalBigTwoRound);

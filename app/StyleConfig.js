@@ -1,4 +1,4 @@
-import { Platform, Dimensions, StyleSheet } from 'react-native'
+import { Platform, Dimensions, StyleSheet } from 'react-native';
 
 const DIMENSIONS = Dimensions.get('window');
 const HEIGHT = DIMENSIONS.height;
@@ -18,13 +18,13 @@ const phoneConfig = {
   IPHONE_X_PADDING: 40,
   IPHONE_X_PADDING2: 40,
   STATUSBARHEIGHT: ANDROID ? 55 : IPHONEX ? 15 + 75 : 75
-}
+};
 
 const colorConfig = {
   modalOpacity: 'rgba(0, 0, 0, 0.7)',
   lightGreen: 'rgba(230, 251, 240, 1)',
   green: 'rgba(5, 219, 106, 1)',
-  purple: `rgba(255, 0, 255, 1)`,
+  purple: "rgba(255, 0, 255, 1)",
   red: '#E74C3C',
   declineRed: '#ff3030',
   blue: '#3498DB',
@@ -41,15 +41,15 @@ const colorConfig = {
   grey5: '#d9d9d9', //217,217,216
   grey6: '#f0f0f0', //240,240,240
   grey7: '#bdbdbd', //189,189,189,
-  grey8: '#eeeeee'//238,238,238
-}
+  grey8: '#eeeeee' //238,238,238
+};
 
 const fontConfig = {
   nobelReg: 'DTLNobelT',
   nobelBold: 'DTLNobelT-Bold',
   dollyReg: 'DollyPro-Regular',
-  dollyBold: 'DollyPro-Bold',
-}
+  dollyBold: 'DollyPro-Bold'
+};
 
 const fontSettings = {
   nobel10: {
@@ -62,6 +62,13 @@ const fontSettings = {
   nobel12: {
     fontFamily: fontConfig.nobelReg,
     fontSize: 12,
+    color: colorConfig.black,
+    letterSpacing: 1,
+    textAlign: 'center'
+  },
+  nobel14: {
+    fontFamily: fontConfig.nobelReg,
+    fontSize: 14,
     color: colorConfig.black,
     letterSpacing: 1,
     textAlign: 'center'
@@ -122,6 +129,13 @@ const fontSettings = {
     letterSpacing: 1,
     textAlign: 'center'
   },
+  nobelBold16: {
+    fontFamily: fontConfig.nobelBold,
+    fontSize: 16,
+    color: colorConfig.black,
+    letterSpacing: 1,
+    textAlign: 'center'
+  },
   nobelBold18: {
     fontFamily: fontConfig.nobelBold,
     fontSize: 18,
@@ -164,13 +178,24 @@ const fontSettings = {
     letterSpacing: 0,
     textAlign: 'center'
   },
-}
-
+};
 
 const dateConfig = {
-  MONTHS: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-}
-
+  MONTHS: [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ]
+};
 
 export default {
   ...phoneConfig,
@@ -178,4 +203,4 @@ export default {
   ...dateConfig,
   ...fontSettings,
   ...fontConfig
-}
+};
