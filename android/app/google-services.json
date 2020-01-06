@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1019350810472",
+    "firebase_url": "https://gamblegods-a1478.firebaseio.com",
+    "project_id": "gamblegods-a1478",
+    "storage_bucket": "gamblegods-a1478.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019350810472:android:3bac8d89d3c83644c920dd",
+        "android_client_info": {
+          "package_name": "com.gamblegods"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1019350810472-40hr19qobavdeamgar8dj541gmvs1r37.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCD3ryhjuaBKzR7uq1PAzaKfR0MUIJ9dJM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1019350810472-40hr19qobavdeamgar8dj541gmvs1r37.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1019350810472-18j3p86iol4kcitejda9qghu856dtgvv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.GambleGods"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

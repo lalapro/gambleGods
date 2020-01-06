@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">GambleGods</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">w56oBfEVCy4USE2liskFIqSOTZKfaye6f7ul23</string>
+</resources>
