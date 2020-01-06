@@ -60,6 +60,7 @@ class Home extends Component<Props> {
     this.state = {
       roomName: 'DARK TABLE',
       showHiddenStats: false,
+      counter: 0,
     };
   }
 
@@ -70,6 +71,20 @@ class Home extends Component<Props> {
   async selectGameToView() {
     const { setSelectedGame } = this.props;
     setSelectedGame({ ...ROOMDETAILS.poker });
+  }
+
+  trigger() {
+    const { counter, showHiddenStats } = this.state;
+    const newCounter = counter + 1;
+    if (showHiddenStats) {
+      this.setState({ showHiddenStats: false, counter: 0 });
+      return;
+    }
+    this.setState({ counter: newCounter }, () => {
+      if (this.state.counter === 3) {
+        this.setState({ showHiddenStats: true });
+      }
+    });
   }
 
   // async fetchRoom() {
@@ -86,11 +101,7 @@ class Home extends Component<Props> {
     return (
       <View style={styles.container}>
         <View style={{ width: '100%', height: 50 }} />
-        <TouchableOpacity
-          onPress={() => {
-            this.setState({ showHiddenStats: !showHiddenStats });
-          }}
-        >
+        <TouchableOpacity onPress={() => this.trigger()}>
           <Text style={styles.roomName}>{roomName}</Text>
         </TouchableOpacity>
         {showHiddenStats &&
