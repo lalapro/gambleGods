@@ -46,6 +46,23 @@ export function startHome() {
   });
 }
 
+export function startLobby() {
+  Navigation.setRoot({
+    root: {
+      stack: {
+        children: [
+          {
+            component: {
+              id: 'Lobby',
+              name: 'Lobby'
+            },
+          },
+        ],
+      },
+    },
+  });
+}
+
 export function dismissModal(componentId) {
   Navigation.dismissModal(componentId);
 }

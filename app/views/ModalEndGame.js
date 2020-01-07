@@ -54,7 +54,7 @@ class ModalEndGame extends Component {
   }
 
   calculateWinningsForPlayer() {
-    const { selectedGame, setTotalsToSend } = this.props;
+    const { selectedGame, setTotalsToSend, history } = this.props;
     const { players, games, roundSums } = selectedGame;
     let totals = [0, 0, 0, 0];
     for (let i = 0; i < 4; i++) {
@@ -65,14 +65,16 @@ class ModalEndGame extends Component {
       totals[i] = total;
     }
     if (games.length) {
-      setTotalsToSend(totals);
       this.setState({ totals });
+    }
+    if (!history) {
+      setTotalsToSend(totals);
     }
   }
 
   render() {
     const { totals } = this.state;
-    const { close, selectedGame } = this.props;
+    const { close, selectedGame, history } = this.props;
     const { players, games, roundSums } = selectedGame;
     return (
       <View style={styles.content}>

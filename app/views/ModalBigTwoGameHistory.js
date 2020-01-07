@@ -85,12 +85,21 @@ const LinearSlideAnimation = {
 class ModalBigTwoGameHistory extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      showEndGameModal: false
+    };
   }
 
   async componentDidMount() {
-    const { gameState, componentId } = this.props;
+    const { gameState, componentId, setSelectedGame } = this.props;
     const { selectedHistory } = gameState;
+    const { games, players, roundResults, wager } = selectedHistory;
+    await setSelectedGame({
+      players,
+      games,
+      roundSums: roundResults,
+      selectedPrice: wager,
+    });
     // API.goThroughGamesAndUpdate(selectedHistory);
   }
 
@@ -99,6 +108,7 @@ class ModalBigTwoGameHistory extends Component {
   }
 
   render() {
+    const { showEndGameModal } = this.state;
     const { gameState, componentId } = this.props;
     const { selectedHistory } = gameState;
     const {
@@ -112,7 +122,20 @@ class ModalBigTwoGameHistory extends Component {
     return (
       <View style={styles.content}>
         <View style={{ width: WIDTH, height: 50 }} />
-        <View>
+        <Button
+          onPress={() => this.setState({ showEndGameModal: true })}
+          text={'tally'}
+          style={{
+            position: 'absolute',
+            height: 50,
+            width: 50,
+            borderRadius: 25,
+            top: 50,
+            right: 20,
+            zIndex: 2
+          }}
+        />
+        <View style={{ zIndex: 1 }}>
           <Text style={{ ...nobelBold18, color: 'white' }}>{date}</Text>
           <View
             style={{
@@ -241,6 +264,14 @@ class ModalBigTwoGameHistory extends Component {
           onPress={() => AppActions.dismissModal(componentId)}
           style={{ position: 'absolute', bottom: 40, width: WIDTH - 40 }}
         />
+        <Modal visible={showEndGameModal} transparent animationType="fade">
+          <ModalEndGame
+            history={true}
+            close={() => {
+              this.setState({ showEndGameModal: false });
+            }}
+          />
+        </Modal>
       </View>
     );
   }

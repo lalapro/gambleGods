@@ -1,5 +1,6 @@
 import React from 'react';
 import Home from './app/views/Home';
+import Lobby from './app/views/Lobby';
 import GameDetails from './app/views/GameDetails';
 import BigTwo from './app/views/BigTwo';
 import Stats from './app/views/Stats';
@@ -101,6 +102,16 @@ Navigation.registerComponent(
     </Provider>
   ),
   () => Stats
+);
+
+Navigation.registerComponent(
+  'Lobby',
+  () => props => (
+    <Provider store={store}>
+      <Lobby {...props} />
+    </Provider>
+  ),
+  () => Lobby
 );
 
 // Navigation.registerComponentWithRedux('app.Home', () => Home, Provider, store);

@@ -35,6 +35,8 @@ class LoadingView extends Component<{}> {
 
   loadDataForApp = async () => {
     const { setGameState } = this.props;
+    const lobby = await API.getAllLobbies();
+    await setGameState({ allLobbies: lobby });
     const users = await API.getAllUsers();
     let newUsers = Object.values(users).sort(
       (a, b) => a.totalWinnings < b.totalWinnings
@@ -43,7 +45,7 @@ class LoadingView extends Component<{}> {
     if (users) {
       setGameState({ users: newUsers });
     }
-    AppActions.startHome();
+    AppActions.startLobby();
   };
 
   checkCodePushSuccess = async () => {

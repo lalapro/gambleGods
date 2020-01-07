@@ -96,13 +96,13 @@ class Home extends Component<Props> {
   render() {
     const { componentId, selectedGameActions, gameState } = this.props;
     const { roomName, showHiddenStats } = this.state;
-    const { users } = gameState;
+    const { users, selectedLobby } = gameState;
     const { gameTypes, members } = ROOMDETAILS;
     return (
       <View style={styles.container}>
         <View style={{ width: '100%', height: 50 }} />
         <TouchableOpacity onPress={() => this.trigger()}>
-          <Text style={styles.roomName}>{roomName}</Text>
+          <Text style={styles.roomName}>{selectedLobby.name}</Text>
         </TouchableOpacity>
         {showHiddenStats &&
           users &&

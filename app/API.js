@@ -204,6 +204,24 @@ export async function sendToDB(
     });
 }
 
+export async function getAllLobbies() {
+  const snapshot = await database()
+    .ref('lobby')
+    .orderByKey()
+    .limitToFirst(50)
+    .once('value');
+  if (snapshot._snapshot) {
+    let array = [];
+    snapshot.forEach(function(childSnapshot) {
+      var childData = childSnapshot.val();
+      array.push(childData);
+    });
+    return array.reverse();
+  } else {
+    return false;
+  }
+}
+
 export async function getBigTwoData() {
   const snapshot = await database()
     .ref('bigTwo')
