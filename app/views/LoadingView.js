@@ -36,6 +36,10 @@ class LoadingView extends Component<{}> {
   loadDataForApp = async () => {
     const {setGameState} = this.props;
     const users = await API.getAllUsers();
+    let newUsers = Object.values(users).sort(
+      (a, b) => a.totalWinnings > b.totalWinnings,
+    );
+    console.log(newUsers);
     if (users) {
       setGameState({users});
     }

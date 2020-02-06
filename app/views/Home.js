@@ -58,6 +58,7 @@ class Home extends Component<Props> {
     super(props);
     this.state = {
       roomName: 'Dark Table',
+      showHiddenStats: false,
     };
   }
 
@@ -78,15 +79,20 @@ class Home extends Component<Props> {
 
   render() {
     const {componentId, selectedGameActions, gameState} = this.props;
-    const {roomName} = this.state;
+    const {roomName, showHiddenStats} = this.state;
     const {users} = gameState;
     const {gameTypes, members} = ROOMDETAILS;
     return (
       <View style={styles.container}>
         <View style={{width: '100%', height: 50}} />
-        <Text style={styles.roomName}>{roomName}</Text>
-        <Text style={{...nobel12}}>Members:</Text>
-        {users &&
+        <TouchableOpacity
+          onPress={() => {
+            this.setState({showHiddenStats: !showHiddenStats});
+          }}>
+          <Text style={styles.roomName}>{roomName}</Text>
+        </TouchableOpacity>
+        {showHiddenStats &&
+          users &&
           Object.keys(users).map(member => {
             let show = users[member].totalWinnings;
             let negative = false;

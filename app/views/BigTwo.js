@@ -118,16 +118,21 @@ class BigTwo extends Component<Props> {
         <ScrollView>
           {history &&
             history.map((game, i) => {
-              const {date, players, total} = game;
+              console.log(game);
+              const {date, players, total, games} = game;
               return (
                 <Card
                   mainText={date}
                   players={players}
                   key={keys[i]}
                   total={total}
+                  subText={`${games.length} rounds`}
                 />
               );
             })}
+          <View
+            style={{height: 300, width: '100%', backgroundColor: 'white'}}
+          />
         </ScrollView>
         <Button
           text="ADD NEW GAME"

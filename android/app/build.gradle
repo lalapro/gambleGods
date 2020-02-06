@@ -1,5 +1,7 @@
 apply plugin: "com.android.application"
-
+configurations {
+    all*.exclude group: 'com.android.support', module: 'support-v4'
+}
 import com.android.build.OutputFile
 
 /**
@@ -131,8 +133,10 @@ android {
         applicationId "com.gamblegods"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        missingDimensionStrategy "RNN.reactNativeVersion", "reactNative60"
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     splits {
         abi {
@@ -152,14 +156,19 @@ android {
     }
     buildTypes {
         debug {
+            buildConfigField "String", "CODEPUSH_KEY", MYAPP_STAGING_CODE_PUSH_KEY
             signingConfig signingConfigs.debug
+            matchingFallbacks = ['release', 'debug']
+            manifestPlaceholders = [isDebug:true]
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
+            buildConfigField "String", "CODEPUSH_KEY", MYAPP_PRODUCTION_CODE_PUSH_KEY
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            manifestPlaceholders = [isDebug:false]
         }
     }
     // applicationVariants are e.g. debug, release
@@ -179,8 +188,19 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-firebase')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation project(':react-native-code-push')
+    implementation project(':react-native-navigation')
+    implementation "com.google.android.gms:play-services-gcm:17.0.0"
+    implementation "com.google.android.gms:play-services-flags:17.0.0"
+    implementation "com.google.android.gms:play-services-measurement:17.2.1"
+    implementation "com.google.android.gms:play-services-clearcut:17.0.0"
+    implementation "com.google.android.gms:play-services-phenotype:17.0.0"
+
+//    implementation "com.google.android.gms:play-services-base:17.1.0"
+//    implementation "com.google.firebase:firebase-core:17.2.1"
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
@@ -199,3 +219,6 @@ task copyDownloadableDepsToLibs(type: Copy) {
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+apply plugin: 'com.google.gms.google-services'
+googleServices { disableVersionCheck = true }
+//com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true
